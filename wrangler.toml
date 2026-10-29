@@ -1,0 +1,51 @@
+name = "car-marketplace"
+main = ".vercel/output/functions/_middleware.func/index.js"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+[build]
+command = "npm run build"
+
+[env]
+NEXT_PUBLIC_APP_URL = "https://automax.com.br"
+NEXT_PUBLIC_APP_NAME = "AutoMax"
+
+[vars]
+NODE_ENV = "production"
+
+[[routes]]
+pattern = "automax.com.br/*"
+zone_name = "automax.com.br"
+
+[[routes]]
+pattern = "www.automax.com.br/*"
+zone_name = "automax.com.br"
+
+[functions]
+node_compat = true
+
+[functions.pools]
+# Edge runtime for middleware
+"middleware" = { limits = { cpu_ms = 50 } }
+
+# API routes with higher limits
+"api/*" = { limits = { cpu_ms = 30000 } }
+
+# Static assets
+"/_next/static/*" = { cache = { browser_ttl = 31536000, edge_ttl = 31536000 } }
+"/public/*" = { cache = { browser_ttl = 86400, edge_ttl = 86400 } }
+
+# ISR/SSG pages
+"/" = { cache = { browser_ttl = 60, edge_ttl = 300, stale_while_revalidate = 600 } }
+"/comprar*" = { cache = { browser_ttl = 30, edge_ttl = 60, stale_while_revalidate = 300 } }
+"/veiculo*" = { cache = { browser_ttl = 60, edge_ttl = 300, stale_while_revalidate = 600 } }
+"/marca*" = { cache = { browser_ttl = 300, edge_ttl = 600, stale_while_revalidate = 1800 } }
+"/destaques" = { cache = { browser_ttl = 60, edge_ttl = 300, stale_while_revalidate = 600 } }
+"/comparar" = { cache = { browser_ttl = 300, edge_ttl = 600 } }
+"/financiamento" = { cache = { browser_ttl = 300, edge_ttl = 600 } }
+
+# No cache for auth/dashboard
+"/dashboard*" = { cache = { bypass = true } }
+"/vender*" = { cache = { bypass = true } }
+"/favoritos*" = { cache = { bypass = true } }
+"/api/*" = { cache = { bypass = true } }

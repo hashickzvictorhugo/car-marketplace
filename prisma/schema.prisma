@@ -1,0 +1,282 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  BUYER
+  SELLER
+  ADMIN
+}
+
+enum ListingStatus {
+  DRAFT
+  PENDING_REVIEW
+  ACTIVE
+  SOLD
+  REJECTED
+  EXPIRED
+}
+
+enum FuelType {
+  GASOLINE
+  ETHANOL
+  FLEX
+  DIESEL
+  HYBRID
+  ELECTRIC
+  GNV
+}
+
+enum TransmissionType {
+  MANUAL
+  AUTOMATIC
+  CVT
+  AUTOMATED
+}
+
+enum BodyType {
+  HATCH
+  SEDAN
+  SUV
+  PICKUP
+  COUPE
+  CONVERTIBLE
+  WAGON
+  VAN
+  MINIVAN
+}
+
+model User {
+  id            String    @id @default(cuid())
+  clerkId       String    @unique
+  email         String    @unique
+  name          String?
+  phone         String?
+  avatar        String?
+  role          UserRole  @default(BUYER)
+  isVerified    Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  listings      Listing[]
+  favorites     Favorite[]
+  inquiries     Inquiry[]
+  comparisons   Comparison[]
+  views         ViewHistory[]
+  notifications Notification[]
+
+  @@index([clerkId])
+  @@index([email])
+}
+
+model Brand {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  logo        String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  models      Model[]
+  listings    Listing[]
+
+  @@index([slug])
+  @@index([isActive])
+}
+
+model Model {
+  id        String   @id @default(cuid())
+  brandId   String
+  name      String
+  slug      String
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  brand     Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  listings  Listing[]
+
+  @@unique([brandId, slug])
+  @@index([brandId])
+  @@index([slug])
+  @@index([isActive])
+}
+
+model Listing {
+  id              String       @id @default(cuid())
+  sellerId        String
+  brandId         String
+  modelId         String
+  title           String
+  description     String
+  price           Decimal      @db.Decimal(12, 2)
+  year            Int
+  mileage         Int
+  fuelType        FuelType
+  transmission    TransmissionType
+  bodyType        BodyType
+  color           String
+  doors           Int
+  engine          String?
+  power           Int?
+  torque          Int?
+  licensePlate    String?      @unique
+  vin             String?      @unique
+  city            String
+  state           String
+  zipCode         String?
+  status          ListingStatus @default(DRAFT)
+  featured        Boolean      @default(false)
+  viewsCount      Int          @default(0)
+  favoritesCount  Int          @default(0)
+  inquiriesCount  Int          @default(0)
+  publishedAt     DateTime?
+  expiresAt       DateTime?
+  rejectedReason  String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  seller          User         @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  brand           Brand        @relation(fields: [brandId], references: [id], onDelete: Restrict)
+  model           Model        @relation(fields: [modelId], references: [id], onDelete: Restrict)
+  images          ListingImage[]
+  features        ListingFeature[]
+  favorites       Favorite[]
+  inquiries       Inquiry[]
+  views           ViewHistory[]
+
+  @@index([sellerId])
+  @@index([brandId])
+  @@index([modelId])
+  @@index([status])
+  @@index([city, state])
+  @@index([price])
+  @@index([year])
+  @@index([featured])
+  @@index([publishedAt])
+  @@index([createdAt])
+}
+
+model ListingImage {
+  id        String   @id @default(cuid())
+  listingId String
+  url       String
+  alt       String?
+  isCover   Boolean  @default(false)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([listingId])
+  @@index([isCover])
+}
+
+model ListingFeature {
+  id        String   @id @default(cuid())
+  listingId String
+  key       String
+  value     String
+  createdAt DateTime @default(now())
+
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@unique([listingId, key])
+  @@index([listingId])
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  listingId String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, listingId])
+  @@index([userId])
+  @@index([listingId])
+}
+
+model Inquiry {
+  id          String   @id @default(cuid())
+  userId      String
+  listingId   String
+  message     String
+  phone       String?
+  email       String
+  status      String   @default("NEW")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing     Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([listingId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Comparison {
+  id        String   @id @default(cuid())
+  userId    String
+  listingIds String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model ViewHistory {
+  id        String   @id @default(cuid())
+  userId    String?
+  listingId String
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([listingId])
+  @@index([createdAt])
+  @@index([ipAddress])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  message   String
+  data      Json?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
