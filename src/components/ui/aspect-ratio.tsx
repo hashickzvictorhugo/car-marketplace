@@ -10,11 +10,12 @@ interface AspectRatioProps extends React.HTMLAttributes<HTMLDivElement> {
 const AspectRatio = React.forwardRef<HTMLDivElement, AspectRatioProps>(
   ({ className, ratio = 16 / 9, children, ...props }, ref) => {
     const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 })
+    const elementRef = React.useRef<HTMLDivElement>(null)
 
     React.useEffect(() => {
       const updateDimensions = () => {
-        if (ref.current) {
-          const { width } = ref.current.getBoundingClientRect()
+        if (elementRef.current) {
+          const { width } = elementRef.current.getBoundingClientRect()
           setDimensions({ width, height: width / ratio })
         }
       }
@@ -25,7 +26,7 @@ const AspectRatio = React.forwardRef<HTMLDivElement, AspectRatioProps>(
 
     return (
       <div
-        ref={ref}
+        ref={(el) => { elementRef.current = el; if (ref) ref.current = el }}
         className={cn("relative w-full", className)}
         style={{ aspectRatio: ratio }}
         {...props}

@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
-import { put } from "@vercel/blob"
+import { auth } from "@clerk/nextjs/server"
+import { put, del } from "@vercel/blob"
+
+async function getUserId() {
+  const { userId } = await auth()
+  return userId
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user) {
+    const userId = await getUserId()
+    if (!userId) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
     }
 
@@ -29,7 +33,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: `Tipo de arquivo não suportado: ${file.type}` }, { status: 400 })
       }
 
-      const filename = `${session.user.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "")}`
+      const filename = `${userId}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "")}`
       const blob = await put(filename, file, { access: "public", addRandomSuffix: true })
       uploadedUrls.push(blob.url)
     }
@@ -43,8 +47,8 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user) {
+    const userId = await getUserId()
+    if (!userId) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
     }
 
@@ -55,9 +59,13 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "URL é obrigatória" }, { status: 400 })
     }
 
-    // Note: Vercel Blob doesn't support direct delete via URL in this simple way
-    // You would need to use the Blob SDK with a token
-    // For now, return success (implement proper deletion with token if needed)
+    // Verify the URL belongs to this user (basic check)
+    if (!url.includes(`${userId}/`)) {
+      return NextResponse.json({ error: "Não autorizado a excluir este arquivo" }, { status: 403 })
+    }
+
+    await del(url)
+
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("Error deleting file:", error)

@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { auth } from "@clerk/nextjs/server"
 import { prisma } from "@/lib/prisma"
+
+async function getUser() {
+  const { userId } = await auth()
+  if (!userId) return null
+  return prisma.user.findUnique({ where: { clerkId: userId } })
+}
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user) {
-      return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
-    }
-
-    const user = await prisma.user.findUnique({ where: { clerkId: session.user.id } })
+    const user = await getUser()
     if (!user) {
-      return NextResponse.json({ error: "Usuário não encontrado" }, { status: 404 })
+      return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
     }
 
     const favorites = await prisma.favorite.findMany({
@@ -39,14 +39,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user) {
-      return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
-    }
-
-    const user = await prisma.user.findUnique({ where: { clerkId: session.user.id } })
+    const user = await getUser()
     if (!user) {
-      return NextResponse.json({ error: "Usuário não encontrado" }, { status: 404 })
+      return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
     }
 
     const { listingId } = await request.json()
@@ -71,14 +66,9 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user) {
-      return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
-    }
-
-    const user = await prisma.user.findUnique({ where: { clerkId: session.user.id } })
+    const user = await getUser()
     if (!user) {
-      return NextResponse.json({ error: "Usuário não encontrado" }, { status: 404 })
+      return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
     }
 
     const { searchParams } = new URL(request.url)

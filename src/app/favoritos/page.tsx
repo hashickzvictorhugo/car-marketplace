@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { useAuth } from "@clerk/nextjs"
 import { Heart, Car, X, ChevronRight, Filter, Grid, List, MapPin, Calendar, Gauge, Zap, Settings } from "lucide-react"
@@ -48,7 +49,7 @@ export default function FavoritosPage() {
             <Heart className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
             <h1 className="text-2xl font-bold mb-2">Faça login para ver seus favoritos</h1>
             <p className="text-muted-foreground mb-6">Salve veículos que você gostou e receba alertas de preço</p>
-            <Link href="/login"><Button size="lg"><Heart className="h-4 w-4 mr-2" />Entrar ou Cadastrar</Button></Link>
+            <Link href="/sign-in"><Button size="lg"><Heart className="h-4 w-4 mr-2" />Entrar ou Cadastrar</Button></Link>
           </div>
         </main>
         <Footer />
@@ -76,8 +77,8 @@ export default function FavoritosPage() {
                   <Filter className="h-4 w-4 mr-2" /> Filtros
                 </Button>
                 <div className="flex border rounded-lg overflow-hidden">
-                  <Button variant={viewMode === "grid" ? "default" : "ghost" size="icon" onClick={() => setViewMode("grid")}><Grid className="h-4 w-4" /></Button>
-                  <Button variant={viewMode === "list" ? "default" : "ghost" size="icon" onClick={() => setViewMode("list")}><List className="h-4 w-4" /></Button>
+                  <Button variant={viewMode === "grid" ? "default" : "ghost"} size="icon" onClick={() => setViewMode("grid")}><Grid className="h-4 w-4" /></Button>
+                  <Button variant={viewMode === "list" ? "default" : "ghost"} size="icon" onClick={() => setViewMode("list")}><List className="h-4 w-4" /></Button>
                 </div>
               </div>
             </div>

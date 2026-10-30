@@ -58,3 +58,5 @@ prisma/migrations/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+.vercel
+.clerk/

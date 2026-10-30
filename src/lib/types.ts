@@ -38,7 +38,7 @@ export type SellerDashboardStats = {
 }
 
 export type InquiryWithListing = Inquiry & {
-  listing: Pick<Listing, "id" | "title" | "price" | "images"> & {
+  listing: Pick<Listing, "id" | "title" | "price"> & {
     images: { url: string; isCover: boolean }[]
   }
 }

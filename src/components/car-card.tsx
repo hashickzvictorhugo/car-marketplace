@@ -151,11 +151,11 @@ export function CarCard({ listing, variant = "default", showSeller = false, onFa
               <TooltipProvider key={spec.label}>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-background/90 backdrop-blur rounded-full text-sm font-medium text-white shadow-lg">
+                    <button className="flex items-center space-x-1.5 px-3 py-1.5 bg-background/90 backdrop-blur rounded-full text-sm font-medium text-white shadow-lg">
                       <spec.icon className="h-4 w-4" />
                       <span>{spec.label}</span>
-                    </TooltipTrigger>
-                  </Tooltip>
+                    </button>
+                  </TooltipTrigger>
                   <TooltipContent>
                     {spec.label}
                   </TooltipContent>

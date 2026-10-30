@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Car, Shield, Truck, Headphones, Facebook, Instagram, Twitter, Youtube } from "lucide-react"
+import { Car, Shield, Truck, Headphones, Globe, MessageSquare, Video } from "lucide-react"
 
 const footerLinks = {
   empresa: [
@@ -47,10 +47,10 @@ const benefits = [
 ]
 
 const socialLinks = [
-  { icon: Facebook, href: "https://facebook.com/automax", label: "Facebook" },
-  { icon: Instagram, href: "https://instagram.com/automax", label: "Instagram" },
-  { icon: Twitter, href: "https://twitter.com/automax", label: "Twitter" },
-  { icon: Youtube, href: "https://youtube.com/automax", label: "YouTube" },
+  { icon: Globe, href: "https://facebook.com/automax", label: "Facebook" },
+  { icon: MessageSquare, href: "https://instagram.com/automax", label: "Instagram" },
+  { icon: Globe, href: "https://twitter.com/automax", label: "Twitter" },
+  { icon: Video, href: "https://youtube.com/automax", label: "YouTube" },
 ]
 
 export function Footer() {
@@ -150,7 +150,7 @@ export function Footer() {
 
         <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
           <p className="text-sm text-muted-foreground text-center md:text-left">
-            &copy; {new Date().getFullYear()} AutoMax. Todos os direitos reservados.
+            &copy; 2024 AutoMax. Todos os direitos reservados.
           </p>
           <div className="flex items-center space-x-6">
             <Link href="/privacidade" className="text-sm text-muted-foreground hover:text-foreground transition-colors">

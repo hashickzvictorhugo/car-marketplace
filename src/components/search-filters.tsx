@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
-import { X, Filter, SlidersHorizontal, ChevronDown, ChevronUp, MapPin, Calendar, DollarSign, Gauge, Zap, Settings, LayoutGrid, List } from "lucide-react"
+import { X, Filter, SlidersHorizontal, ChevronDown, ChevronUp, MapPin, Calendar, DollarSign, Gauge, Zap, Settings, LayoutGrid, List, Shield } from "lucide-react"
 import { cn, formatPrice, formatNumber, FUEL_TYPES, TRANSMISSION_TYPES, BODY_TYPES, STATES_BR } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -403,7 +403,7 @@ export function SearchFiltersComponent({
             label: "Carroceria",
             name: "bodyType",
             options: Object.entries(BODY_TYPES).map(([key, value]) => ({ value: key, label: `${value.icon} ${value.label}` })),
-            selected: filters.bodyType,
+            selected: filters.bodyType || [],
             onChange: (value) => updateFilters({ bodyType: value }),
             icon: <LayoutGrid className="h-4 w-4" />,
           })}
@@ -412,7 +412,7 @@ export function SearchFiltersComponent({
             label: "Cor",
             name: "color",
             options: COLORS.map((c) => ({ value: c, label: c })),
-            selected: filters.colors,
+            selected: filters.colors || [],
             onChange: (value) => updateFilters({ colors: value }),
             icon: <List className="h-4 w-4" />,
           })}
@@ -470,7 +470,7 @@ export function SearchFiltersComponent({
             <Checkbox
               id="featured"
               checked={filters.featured}
-              onCheckedChange={(checked) => updateFilters({ featured: checked })}
+              onCheckedChange={(checked: boolean) => updateFilters({ featured: checked })}
             />
             <Label htmlFor="featured" className="cursor-pointer">
               Apenas veículos em destaque
@@ -481,8 +481,8 @@ export function SearchFiltersComponent({
 
       <div className="flex items-center justify-between pt-4 border-t">
         <Label htmlFor="sortBy">Ordenar por</Label>
-        <Select value={filters.sortBy} onValueChange={(value) => updateFilters({ sortBy: value as SearchFilters["sortBy"] })} className="w-48">
-          <SelectTrigger id="sortBy">
+        <Select value={filters.sortBy} onValueChange={(value) => updateFilters({ sortBy: value as SearchFilters["sortBy"] })}>
+          <SelectTrigger id="sortBy" className="w-48">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

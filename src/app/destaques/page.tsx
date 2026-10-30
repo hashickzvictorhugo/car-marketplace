@@ -1,8 +1,10 @@
 "use client"
 
+import { useState } from "react"
 import { Star, Filter, Grid, List, ChevronRight } from "lucide-react"
 import { cn, formatPrice, formatNumber } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { CarCard } from "@/components/car-card"
 import { SearchFiltersComponent } from "@/components/search-filters"
 import { Header } from "@/components/header"
@@ -48,8 +50,8 @@ export default function DestaquesPage() {
               <div className="flex items-center space-x-2">
                 <Button variant="outline" size="sm" onClick={() => setFiltersOpen(!filtersOpen)}><Filter className="h-4 w-4 mr-2" /> Filtros</Button>
                 <div className="flex border rounded-lg overflow-hidden">
-                  <Button variant={viewMode === "grid" ? "default" : "ghost" size="icon" onClick={() => setViewMode("grid")}><Grid className="h-4 w-4" /></Button>
-                  <Button variant={viewMode === "list" ? "default" : "ghost" size="icon" onClick={() => setViewMode("list")}><List className="h-4 w-4" /></Button>
+                  <Button variant={viewMode === "grid" ? "default" : "ghost"} size="icon" onClick={() => setViewMode("grid")}><Grid className="h-4 w-4" /></Button>
+                  <Button variant={viewMode === "list" ? "default" : "ghost"} size="icon" onClick={() => setViewMode("list")}><List className="h-4 w-4" /></Button>
                 </div>
               </div>
             </div>

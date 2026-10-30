@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useAuth } from "@clerk/nextjs"
-import { LayoutDashboard, Car, Plus, Eye, Edit, Trash2, Heart, MessageSquare, BarChart2, Settings, LogOut, ChevronRight, Filter, Download, Clock, CheckCircle, XCircle, AlertTriangle, DollarSign, Users, Star, TrendingUp } from "lucide-react"
+import { LayoutDashboard, Car, Plus, Eye, Edit, Trash2, Heart, MessageSquare, BarChart2, Settings, LogOut, ChevronRight, Filter, Download, Clock, CheckCircle, XCircle, AlertTriangle, DollarSign, Users, Star, TrendingUp, Shield } from "lucide-react"
 import { cn, formatPrice, formatNumber, formatRelativeTime, LISTING_STATUS_LABELS } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -220,7 +220,10 @@ export default function DashboardPage() {
                                 <p className="text-sm text-muted-foreground">{listing.year} • {formatNumber(listing.mileage)} km • {formatRelativeTime(listing.createdAt)}</p>
                               </div>
                               <Badge className={cn("whitespace-nowrap", statusColors[listing.status as keyof typeof statusColors])}>
-                                <statusIcons[listing.status as keyof typeof statusIcons] className="h-3 w-3 mr-1" />
+                                {(() => {
+                                  const Icon = statusIcons[listing.status as keyof typeof statusIcons];
+                                  return <Icon className="h-3 w-3 mr-1" />;
+                                })()}
                                 {LISTING_STATUS_LABELS[listing.status as keyof typeof LISTING_STATUS_LABELS]}
                               </Badge>
                             </div>

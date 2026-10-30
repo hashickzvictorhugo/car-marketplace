@@ -134,80 +134,82 @@ export default function CompararPage() {
               {/* View Toggle */}
               <div className="flex justify-end mb-4">
                 <div className="flex border rounded-lg overflow-hidden">
-                  <Button variant={viewMode === "table" ? "default" : "ghost" size="sm" onClick={() => setViewMode("table")}>Tabela</Button>
-                  <Button variant={viewMode === "cards" ? "default" : "ghost" size="sm" onClick={() => setViewMode("cards")}>Cards</Button>
+                  <Button variant={viewMode === "table" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("table")}>Tabela</Button>
+                  <Button variant={viewMode === "cards" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("cards")}>Cards</Button>
                 </div>
               </div>
 
-              {viewMode === "table" && (
-                {/* Table View */}
-                <div className="overflow-x-auto rounded-xl border">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="bg-muted">
-                        <th className="p-4 text-left font-semibold">Especificação</th>
-                        {selectedVehicles.map(v => (
-                          <th key={v.id} className="p-4 text-center">
-                            <div className="flex items-center justify-center gap-2">
-                              <img src={v.images[0].url} alt={v.title} className="w-16 h-10 rounded object-cover" />
-                              <span className="font-medium">{v.brand} {v.model}</span>
-                              <Button variant="ghost" size="icon" onClick={() => removeFromCompare(v.id)}><X className="h-4 w-4" /></Button>
-                            </div>
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {comparisonSpecs.map(spec => (
-                        <tr key={spec.key} className="border-t">
-                          <td className="p-4 font-medium text-muted-foreground flex items-center gap-2 whitespace-nowrap">
-                            {spec.icon && <spec.icon className="h-4 w-4" />}
-                            {spec.key}
-                          </td>
-                          {selectedVehicles.map(v => {
-                            const value = v[spec.key.toLowerCase().replace(/[^a-z]/g, "") as keyof typeof v] || v[spec.key as keyof typeof v]
-                            return (
-                              <td key={v.id} className={cn("p-4 text-center", isDifferent(selectedVehicles.map(vv => vv[spec.key as keyof typeof vv])) && "bg-yellow-50 font-semibold")}>
-                                {spec.format(value)}
-                              </td>
-                            )
-                          })}
+              {viewMode === "table" ? (
+                <> {/* Table View */}
+                  <div className="overflow-x-auto rounded-xl border">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="bg-muted">
+                          <th className="p-4 text-left font-semibold">Especificação</th>
+                          {selectedVehicles.map(v => (
+                            <th key={v.id} className="p-4 text-center">
+                              <div className="flex items-center justify-center gap-2">
+                                <img src={v.images[0].url} alt={v.title} className="w-16 h-10 rounded object-cover" />
+                                <span className="font-medium">{v.brand} {v.model}</span>
+                                <Button variant="ghost" size="icon" onClick={() => removeFromCompare(v.id)}><X className="h-4 w-4" /></Button>
+                              </div>
+                            </th>
+                          ))}
                         </tr>
-                      ))}
-                      <tr className="bg-primary/5">
-                        <td className="p-4 font-semibold">Preço Total (c/ taxas est.)</td>
-                        {selectedVehicles.map(v => (
-                          <td key={v.id} className="p-4 text-center font-bold text-primary">{formatPrice(v.price * 1.05)}</td>
+                      </thead>
+                      <tbody>
+                        {comparisonSpecs.map(spec => (
+                          <tr key={spec.key} className="border-t">
+                            <td className="p-4 font-medium text-muted-foreground flex items-center gap-2 whitespace-nowrap">
+                              {spec.icon && <spec.icon className="h-4 w-4" />}
+                              {spec.key}
+                            </td>
+                            {selectedVehicles.map(v => {
+                              const value = v[spec.key.toLowerCase().replace(/[^a-z]/g, "") as keyof typeof v] || v[spec.key as keyof typeof v]
+                              return (
+                                <td key={v.id} className={cn("p-4 text-center", isDifferent(selectedVehicles.map(vv => vv[spec.key as keyof typeof vv])) && "bg-yellow-50 font-semibold")}>
+                                  {spec.format(value)}
+                                </td>
+                              )
+                            })}
+                          </tr>
                         ))}
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              )}
+                        <tr className="bg-primary/5">
+                          <td className="p-4 font-semibold">Preço Total (c/ taxas est.)</td>
+                          {selectedVehicles.map(v => (
+                            <td key={v.id} className="p-4 text-center font-bold text-primary">{formatPrice(v.price * 1.05)}</td>
+                          ))}
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              ) : null}
 
-              {viewMode === "cards" && (
-                {/* Cards View */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {selectedVehicles.map(v => (
-                    <Card key={v.id} className="relative">
-                      <Button variant="ghost" size="icon" className="absolute top-2 right-2 z-10" onClick={() => removeFromCompare(v.id)}><X className="h-4 w-4" /></Button>
-                      <CardHeader className="text-center">
-                        <img src={v.images[0].url} alt={v.title} className="w-full h-40 object-cover rounded-lg mx-auto mb-4" />
-                        <CardTitle>{v.brand} {v.model}</CardTitle>
-                        <p className="text-2xl font-bold text-primary">{formatPrice(v.price)}</p>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        {comparisonSpecs.slice(0, 6).map(spec => (
-                          <div key={spec.key} className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">{spec.key}</span>
-                            <span className="font-medium">{spec.format(v[spec.key as keyof typeof v] || "")}</span>
-                          </div>
-                        ))}
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
+              {viewMode === "cards" ? (
+                <> {/* Cards View */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {selectedVehicles.map(v => (
+                      <Card key={v.id} className="relative">
+                        <Button variant="ghost" size="icon" className="absolute top-2 right-2 z-10" onClick={() => removeFromCompare(v.id)}><X className="h-4 w-4" /></Button>
+                        <CardHeader className="text-center">
+                          <img src={v.images[0].url} alt={v.title} className="w-full h-40 object-cover rounded-lg mx-auto mb-4" />
+                          <CardTitle>{v.brand} {v.model}</CardTitle>
+                          <p className="text-2xl font-bold text-primary">{formatPrice(v.price)}</p>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          {comparisonSpecs.slice(0, 6).map(spec => (
+                            <div key={spec.key} className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">{spec.key}</span>
+                              <span className="font-medium">{spec.format(v[spec.key as keyof typeof v] || "")}</span>
+                            </div>
+                          ))}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </>
+              ) : null}
             </>
           )}
         </div>

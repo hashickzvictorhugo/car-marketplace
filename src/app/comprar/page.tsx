@@ -1,14 +1,8 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { useSearchParams } from "next/navigation"
-import { Filter, X, ChevronDown, ChevronUp, List, Grid, Loader2 } from "lucide-react"
-import { cn, formatPrice, formatNumber } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { CarCard } from "@/components/car-card"
-import { SearchFiltersComponent } from "@/components/search-filters"
+import { Suspense } from "react"
+import { Loader2 } from "lucide-react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import { ComprarClient } from "./comprar-client"
 
 const mockListings = [
   {
@@ -166,169 +160,31 @@ const mockListings = [
 ]
 
 export default function ComprarPage() {
-  const searchParams = useSearchParams()
-  const [listings, setListings] = useState(mockListings)
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [filtersOpen, setFiltersOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [sortBy, setSortBy] = useState("newest")
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 12
-
-  const totalPages = Math.ceil(listings.length / itemsPerPage)
-  const paginatedListings = listings.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-
-  const activeFilters = searchParams.get("brand") || searchParams.get("model") || searchParams.get("minPrice") || searchParams.get("maxPrice") || searchParams.get("state") || searchParams.getAll("fuelType").length > 0 || searchParams.getAll("transmission").length > 0 || searchParams.getAll("bodyType").length > 0
-
-  const handleSortChange = (value: string) => {
-    setSortBy(value)
-    const sorted = [...listings].sort((a, b) => {
-      switch (value) {
-        case "price_asc": return a.price - b.price
-        case "price_desc": return b.price - a.price
-        case "year_desc": return b.year - a.year
-        case "year_asc": return a.year - b.year
-        case "mileage_asc": return a.mileage - b.mileage
-        case "mileage_desc": return b.mileage - a.mileage
-        case "oldest": return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        default: return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      }
-    })
-    setListings(sorted)
-  }
-
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-
       <main className="flex-1">
-        {/* Page Header */}
         <section className="bg-muted/30 py-12 lg:py-16">
           <div className="container">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
               <div>
                 <h1 className="text-3xl sm:text-4xl font-bold">Comprar Veículos</h1>
-                <p className="text-muted-foreground mt-1">{listings.length} veículos encontrados</p>
-              </div>
-              <div className="flex items-center space-x-4">
-                <Button variant="outline" size="sm" onClick={() => setFiltersOpen(!filtersOpen)}>
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filtros
-                  {activeFilters && <span className="ml-2 px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full">{searchParams.getAll("fuelType").length + searchParams.getAll("transmission").length + searchParams.getAll("bodyType").length + (searchParams.get("brand") ? 1 : 0) + (searchParams.get("minPrice") ? 1 : 0) + (searchParams.get("maxPrice") ? 1 : 0)}</span>}
-                </Button>
-                <div className="flex items-center space-x-1 border rounded-lg overflow-hidden">
-                  <Button variant={viewMode === "grid" ? "default" : "ghost" size="icon" onClick={() => setViewMode("grid")} aria-label="Grade">
-                    <Grid className="h-4 w-4" />
-                  </Button>
-                  <Button variant={viewMode === "list" ? "default" : "ghost" size="icon" onClick={() => setViewMode("list")} aria-label="Lista">
-                    <List className="h-4 w-4" />
-                  </Button>
-                </div>
+                <p className="text-muted-foreground mt-1">{mockListings.length} veículos encontrados</p>
               </div>
             </div>
 
-            {filtersOpen && (
-              <div className="animate-slide-down mb-8">
-                <SearchFiltersComponent />
-              </div>
-            )}
-
-            {/* Results Toolbar */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 p-4 bg-card rounded-xl border">
-              <div className="flex items-center space-x-4 flex-wrap">
-                <span className="text-sm text-muted-foreground">
-                  Mostrando <span className="font-semibold text-foreground">{(currentPage - 1) * itemsPerPage + 1}</span> a <span className="font-semibold text-foreground">{Math.min(currentPage * itemsPerPage, listings.length)}</span> de <span className="font-semibold text-foreground">{listings.length}</span> resultados
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Label htmlFor="sort" className="text-sm text-muted-foreground">Ordenar:</Label>
-                <select
-                  id="sort"
-                  value={sortBy}
-                  onChange={(e) => handleSortChange(e.target.value)}
-                  className="px-3 py-2 border rounded-lg text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring"
-                >
-                  <option value="newest">Mais Recentes</option>
-                  <option value="price_asc">Menor Preço</option>
-                  <option value="price_desc">Maior Preço</option>
-                  <option value="year_desc">Ano Decrescente</option>
-                  <option value="year_asc">Ano Crescente</option>
-                  <option value="mileage_asc">Menor Km</option>
-                  <option value="mileage_desc">Maior Km</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Listings Grid/List */}
-            {loading ? (
+            <Suspense fallback={
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[...Array(6)].map((_, i) => (
                   <div key={i} className="bg-card rounded-xl border animate-pulse h-80" />
                 ))}
               </div>
-            ) : paginatedListings.length > 0 ? (
-              <>
-                <div className={cn(
-                  "gap-6",
-                  viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "flex flex-col"
-                )} role="list">
-                  {paginatedListings.map((listing) => (
-                    <CarCard
-                      key={listing.id}
-                      listing={listing as any}
-                      variant={viewMode === "list" ? "compact" : "default"}
-                    />
-                  ))}
-                </div>
-
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <nav className="flex items-center justify-center space-x-2 mt-8" aria-label="Paginação">
-                    <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                      let pageNum
-                      if (totalPages <= 5) pageNum = i + 1
-                      else if (currentPage <= 3) pageNum = i + 1
-                      else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i
-                      else pageNum = currentPage - 2 + i
-
-                      return (
-                        <Button
-                          key={pageNum}
-                          variant={currentPage === pageNum ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setCurrentPage(pageNum)}
-                          className="min-w-[40px]"
-                        >
-                          {pageNum}
-                        </Button>
-                      )
-                    })}
-                    <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </nav>
-                )}
-              </>
-            ) : (
-              <div className="text-center py-16">
-                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
-                  <Search className="h-10 w-10 text-muted-foreground" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Nenhum veículo encontrado</h3>
-                <p className="text-muted-foreground mb-6">Tente ajustar os filtros ou ampliar a busca</p>
-                <Button variant="outline" onClick={() => window.location.href = "/comprar"}>
-                  <X className="h-4 w-4 mr-2" />
-                  Limpar Filtros
-                </Button>
-              </div>
-            )}
+            }>
+              <ComprarClient initialListings={mockListings} />
+            </Suspense>
           </div>
         </section>
       </main>
-
       <Footer />
     </div>
   )

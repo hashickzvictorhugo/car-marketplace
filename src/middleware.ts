@@ -1,35 +1,44 @@
-import { authMiddleware } from "@clerk/nextjs"
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server"
 
-export default authMiddleware({
-  publicRoutes: [
-    "/",
-    "/comprar(.*)",
-    "/veiculo(.*)",
-    "/marca(.*)",
-    "/destaques",
-    "/comparar",
-    "/financiamento",
-    "/api/webhooks/clerk",
-    "/api/brands",
-    "/api/models",
-    "/api/listings",
-    "/login",
-    "/cadastro",
-    "/sobre",
-    "/contato",
-    "/ajuda",
-    "/faq",
-    "/termos",
-    "/privacidade",
-  ],
-  ignoredRoutes: [
-    "/api/webhooks/clerk",
-    "/_next(.*)",
-    "/static(.*)",
-    "/favicon.ico",
-    "/robots.txt",
-    "/sitemap.xml",
-  ],
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/comprar(.*)",
+  "/veiculo(.*)",
+  "/marca(.*)",
+  "/destaques",
+  "/comparar",
+  "/financiamento",
+  "/favoritos",
+  "/dashboard",
+  "/vender",
+  "/api/webhooks/clerk",
+  "/api/brands",
+  "/api/models",
+  "/api/listings",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/login",
+  "/cadastro",
+  "/sobre",
+  "/contato",
+  "/ajuda",
+  "/faq",
+  "/termos",
+  "/privacidade",
+])
+
+const isIgnoredRoute = createRouteMatcher([
+  "/api/webhooks/clerk",
+  "/_next(.*)",
+  "/static(.*)",
+  "/favicon.ico",
+  "/robots.txt",
+  "/sitemap.xml",
+])
+
+export default clerkMiddleware(async (auth, request) => {
+  if (isIgnoredRoute(request)) return
+  if (!isPublicRoute(request)) await auth.protect()
 })
 
 export const config = {
