@@ -5,8 +5,6 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   compress: true,
   output: "standalone",
-  cacheComponents: true,
-  partialPrefetching: true,
   typescript: {
     ignoreBuildErrors: true,
   },

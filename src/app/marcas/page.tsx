@@ -4,6 +4,8 @@ import { ChevronRight, Car, Gauge, Calendar } from "lucide-react"
 import Link from "next/link"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 
 const brands = [
   { id: "1", name: "Chevrolet", logo: "CH", count: 1250, models: ["Onix", "Onix Plus", "Tracker", "S10", "Spin"] },

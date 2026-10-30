@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@clerk/nextjs/server"
 import { put, del } from "@vercel/blob"
 
+export const dynamic = 'force-dynamic'
+
 async function getUserId() {
   const { userId } = await auth()
   return userId
