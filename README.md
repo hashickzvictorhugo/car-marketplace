@@ -2,7 +2,7 @@
 
 Um marketplace completo de veículos construído com Next.js 15, TypeScript, Tailwind CSS, Prisma, Clerk e Vercel.
 
-## 🚀 Funcionalidades
+##  Funcionalidades
 
 ### Para Compradores
 - **Busca Avançada** - Filtros por marca, modelo, preço, ano, km, combustível, transmissão, carroceria, cor, localização
@@ -39,7 +39,7 @@ Um marketplace completo de veículos construído com Next.js 15, TypeScript, Tai
 | **Payments** | Stripe / Mercado Pago (ready) |
 | **Email** | SendGrid / Resend (ready) |
 
-## 📦 Estrutura do Projeto
+##  Estrutura do Projeto
 
 ```
 src/
@@ -75,7 +75,7 @@ src/
 └── middleware.ts          # Clerk middleware
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Pré-requisitos
 - Node.js 20+
@@ -131,7 +131,7 @@ SENDGRID_API_KEY=SG...
 SENDGRID_FROM_EMAIL=noreply@automax.com
 ```
 
-## 📱 Deploy
+## Deploy
 
 ### Vercel (Recomendado)
 ```bash
@@ -154,7 +154,7 @@ docker build -t car-marketplace .
 docker run -p 3000:3000 --env-file .env car-marketplace
 ```
 
-## 📚 Scripts Disponíveis
+##  Scripts Disponíveis
 
 ```bash
 npm run dev          # Desenvolvimento (Turbopack)
@@ -166,7 +166,7 @@ npx prisma studio    # GUI do banco
 npx prisma migrate dev # Migrações
 ```
 
-## 🗄 Schema do Banco (Prisma)
+## Schema do Banco (Prisma)
 
 Principais models:
 - **User** - Compradores, vendedores, admins (Clerk sync)
@@ -179,7 +179,7 @@ Principais models:
 - **Notification** - Notificações em tempo real
 - **Setting** - Configurações do sistema
 
-## 🔧 Extensibilidade
+## Extensibilidade
 
 ### Adicionar novo campo no anúncio
 1. `prisma/schema.prisma` - Adicionar ao model `Listing`
@@ -193,23 +193,17 @@ Adicionar ao array `BANKS` em `/financiamento/page.tsx`
 ### Nova página
 Criar pasta em `src/app/nova-pagina/page.tsx`
 
-## 📄 Licença
+##  Licença
 
 MIT License - veja [LICENSE](LICENSE) para detalhes.
 
-## 🤝 Contribuindo
+##  Contribuindo
 
 1. Fork o projeto
 2. Crie branch (`git checkout -b feature/nova-funcionalidade`)
 3. Commit (`git commit -m 'Add: nova funcionalidade'`)
 4. Push (`git push origin feature/nova-funcionalidade`)
 5. Abra Pull Request
-
-## 📞 Suporte
-
-- **Issues**: GitHub Issues
-- **Email**: suporte@automax.com.br
-- **Docs**: /docs (em construção)
 
 ---
 
